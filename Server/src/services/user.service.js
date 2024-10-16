@@ -64,4 +64,4 @@ const getAllUsers=async()=>{
         throw new Error(error);
     }
 }
-module.exports={createUser,findUserById,findUserByEmail};
+module.exports={createUser,findUserById,findUserByEmail,getProfileByToken,getAllUsers};
