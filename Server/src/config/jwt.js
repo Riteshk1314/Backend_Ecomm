@@ -4,7 +4,7 @@ const generateToken = (userId) => {
     const token = jwt.sign({ userId }, process.env.JWT_SECRET, {expiresIn: '1d'});
     return token;
 }
-const getUserProfileByToken = async (token) => {
+const getUserIdByToken = async (token) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         return decoded.UserId;
@@ -12,3 +12,4 @@ const getUserProfileByToken = async (token) => {
         throw new Error(error);
     }
 }
+module.exports = { generateToken, getUserIdByToken };

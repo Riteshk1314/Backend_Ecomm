@@ -1,5 +1,6 @@
 const User=require('../models/user.model');
 const bcrypt=require('bcrypt');
+const jwtprovide=require('../config/jwt.js');
 const createUser=async (userData)=>{
     try{
         let {firstName,lastName,email,password}=userData;
@@ -40,5 +41,27 @@ const findUserByEmail=async(email)=>{
 }
 const getUserProfileByToken=async(token)=>{
     try{
-        const user=await
+        const userId=await jwtprovide.getUserIdByToken(token);
+        const user=await findUserById(userId);
+        if(!user){
+            throw new Error('User not found',userId);
+        }
+        return user;
+    }
+    catch(error){
+        throw new Error(error);
+    }
+}
+const getAllUsers=async()=>{
+    try{
+        const users=await User.find({});
+        if(!users){
+            throw new Error('Users not found');
+        }
+        return users;
+    }
+    catch(error){
+        throw new Error(error);
+    }
+}
 module.exports={createUser,findUserById,findUserByEmail};
