@@ -1,5 +1,7 @@
 const userService = require('../services/user-service');
 const jwtProvider = require('../config/jwt');
+const bcrypt = require('bcrypt');
+const cartService = require('../services/cart-service');
 const register = async (req, res) => {
     try {
         const user= await userService.createUser(req.body);
@@ -30,3 +32,4 @@ const login = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 }
+module.exports = { register, login };
