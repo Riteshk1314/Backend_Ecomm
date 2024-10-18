@@ -3,7 +3,7 @@ const userService= require("../services/user.service.js")
 
 async function updateCartItem(userId, cartItemId,CartItemData){
     try{
-        const item= await findCartItemById(cartItemId):
+        const item= await findCartItemById(cartItemId);
         if(!item){
             throw new Error("Item not found")
         }
@@ -16,6 +16,7 @@ async function updateCartItem(userId, cartItemId,CartItemData){
             item.price=item.quantity*item.product.price;
             item.discountedPrice=item.quantity*item.product.discountedPrice;
             const updatedCartItem=await item.save();
+            
             return updatedCartItem;
         }   
         else{
