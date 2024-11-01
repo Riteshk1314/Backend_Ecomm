@@ -1,13 +1,11 @@
-{
-  "name": "y",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
 
-  },
+  {
+    "name": "blumi",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
   "author": "",
   "license": "ISC",
   "description": "",
