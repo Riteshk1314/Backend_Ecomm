@@ -2,7 +2,10 @@ const jwt = require('jsonwebtoken');
 
 const auth = (roles = []) => {
   return async (req, res, next) => {
+    console.log("auth middleware");
     try {
+      console.log("auth middleware");
+      
       const authHeader = req.headers.authorization;
       if (!authHeader?.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Unauthorized' });

@@ -4,12 +4,12 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth.routes');
-const productRoutes = require('./routes/product.routes');
-const categoryRoutes = require('./routes/category.routes');
-const vendorRoutes = require('./routes/vendor.routes');
-const orderRoutes = require('./routes/order.routes');
-const brandRoutes = require('./routes/brand.routes');
+const productRoutes = require('./src/routes/product.route.js');
+const categoryRoutes = require('./src/routes/category.route.js');
+const vendorRoutes = require('./src/routes/vendor.route.js');
+const orderRoutes = require('./src/routes/order.route.js');
+const brandRoutes = require('./src/routes/brand.route.js');
+const authRoutes = require('./src/routes/auth.routes.js');
 
 const app = express();
 
@@ -27,11 +27,18 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/brands', brandRoutes);
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/multi-vendor-ecommerce')
+mongoose.connect('mongodb+srv://rkapoorbe23:La1YcgqAGSHLK7XL@blumi.r2bw9.mongodb.net/?retryWrites=true&w=majority&appName=Blumi')
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+
+
+
+
+

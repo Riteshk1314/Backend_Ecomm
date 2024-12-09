@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-const auth = require('../middleware/auth.middleware');
-const brandController = require('../controllers/brand.controller');
+const auth = require('../middlewares/auth.middleware.js');
+const brandController = require('../controller/brand.controller.js');
 
 router.get('/', brandController.getAllBrands);
 router.get('/:id', brandController.getBrandById);

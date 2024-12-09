@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-const auth = require('../middleware/auth.middleware');
-const categoryController = require('../controllers/category.controller');
+const auth = require('../middlewares/auth.middleware.js');
+const categoryController = require('../controller/category.controller.js');
 
 router.get('/', categoryController.getAllCategories);
 router.get('/:id', categoryController.getCategoryById);

@@ -1,6 +1,6 @@
-const Vendor = require('../models/vendor.model');
-const User = require('../models/user.model');
-const Product = require('../models/product.model');
+const Vendor = require('../models/vendor.model.js');
+const User = require('../models/user.model.js');
+const Product = require('../models/product.model.js');
 
 const getAllVendors = async (req, res) => {
   try {

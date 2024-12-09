@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-const auth = require('../middleware/auth.middleware');
-const productController = require('../controllers/product.controller');
+const auth = require('../middlewares/auth.middleware.js');
+const productController = require('../controller/product.controller.js');
 
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
 
-router.post('/',
+router.post('/add',
   auth(['vendor']),
   [
     body('name').trim().notEmpty(),

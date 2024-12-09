@@ -1,5 +1,5 @@
-const Brand = require('../models/brand.model');
-const Product = require('../models/product.model');
+const Brand = require('../models/brand.model.js');
+const Product = require('../models/product.model.js');
 
 const getAllBrands = async (req, res) => {
   try {
