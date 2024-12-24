@@ -7,20 +7,20 @@ const jwt = require('jsonwebtoken');
 const register = async (req, res) => {
   try {
     const { email, password, role } = req.body;
-    console.log(email);
-    console .log(password);
-    console.log(role);
+    // console.log(email);
+    // console .log(password);
+    // console.log(role);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+    return res.status(400).json({ message: 'User already exists' });
     }
     const user = new User({ email, password, role });
-console.log("1");
+        console.log("1");
 
     const { accessToken, refreshToken } = generateTokens(user);
-    console.log("2");
+    // console.log("2");
     user.refreshToken = refreshToken;
-    console.log("3");
+    // console.log("3");
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -30,9 +30,9 @@ console.log("1");
         httpOnly: true,
         maxAge: 15 * 60 * 1000
     });
-    console.log("4");
-        await user.save();
-        console.log("5");
+    // console.log("4");
+    await user.save();
+    //     console.log("5");
 
 
     res.status(201).json({ user,refreshToken, accessToken });
@@ -46,9 +46,9 @@ console.log("1");
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email);
-        console.log(password);
-        console.log("1");
+        // console.log(email);
+        // console.log(password);
+        // console.log("1");
         const user = await User.findOne({ email });
         if (!user || !(await user.comparePassword(password))) {
             return res.status(400).json({ message: 'Invalid email or password' });
@@ -96,12 +96,51 @@ const logout = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
-        res.status(200).json(users);
+        // Fetch users but exclude sensitive information
+        const users = await User.find()
+            .select('-password -refreshToken') // Exclude sensitive fields
+            .lean(); // Convert to plain JavaScript objects for better performance
+        
+        // Transform the data to only send necessary information
+        const sanitizedUsers = users.map(user => ({
+            id: user._id,
+            email: user.email,
+            role: user.role,
+            // Add any other non-sensitive fields you want to include
+        }));
+
+        res.status(200).json({ users: sanitizedUsers });
     } catch (error) {
+        console.error('Get all users error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
+const getUser = async (req, res) => {
+    try {
+        // req.user comes from your auth middleware
+        // It should contain the user ID from the JWT token
+        const user = await User.findOne(req.email); // Exclude sensitive fields
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.....' });
+        }
+
+        res.status(200).json({ 
+            user: {
+                id: user._id,
+                email: user.email,
+                role: user.role,
+                // Add any other fields you want to return
+            }
+        });
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
 
 const refreshToken = async (req, res) => {
     try {
@@ -140,5 +179,5 @@ module.exports = {
     register,
     login,
     logout,refreshToken,
-    getAllUsers
+    getAllUsers,getUser
 };

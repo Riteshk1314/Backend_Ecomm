@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -21,10 +21,10 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/vendors', vendorRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/brands', brandRoutes);
+// app.use('/api/categories', categoryRoutes);
+// app.use('/api/vendors', vendorRoutes);
+// app.use('/api/orders', orderRoutes);
+// app.use('/api/brands', brandRoutes);
 
 // Database connection
 mongoose.connect('mongodb+srv://rkapoorbe23:La1YcgqAGSHLK7XL@blumi.r2bw9.mongodb.net/?retryWrites=true&w=majority&appName=Blumi')

@@ -1,34 +1,38 @@
-const express = require('express');
-const router = express.Router();
-const { body } = require('express-validator');
-const auth = require('../middlewares/auth.middleware.js');
-const vendorController = require('../controller/vendor.controller.js');
+// const express = require('express');
+// const router = express.Router();
+// const { body } = require('express-validator');
+// const authController = require('../controller/auth.controller.js');
+// const { isAdmin, isVendor, isCustomer } = require('../middlewares/auth.middleware.js');
+// const vendorController = require('../controller/vendor.controller.js');
 
-router.get('/', vendorController.getAllVendors);
-router.get('/:id', vendorController.getVendorById);
-router.get('/:id/products', vendorController.getVendorProducts);
+// // Public routes
+// router.get('/', vendorController.getAllVendors);
+// router.get('/:id', vendorController.getVendorById);
+// router.get('/:id/products', vendorController.getVendorProducts);
 
-router.post('/register',
-  auth(['customer']),
-  [
-    body('businessName').trim().notEmpty(),
-    body('description').trim().optional(),
-    body('address').isObject(),
-  ],
-  vendorController.registerVendor
-);
+// // Customer can register as a vendor
+// router.post(
+//   '/register',
+//   isCustomer,
+//   [
+//     body('businessName').trim().notEmpty().withMessage('Business name is required'),
+//     body('description').trim().optional(),
+//     body('address').isObject().withMessage('Address must be an object'),
+//   ],
+//   vendorController.registerVendor
+// );
 
-router.put('/profile',
-  auth(['vendor']),
-  vendorController.updateVendorProfile
-);
+// // Vendor can update their profile
+// router.put('/profile', isVendor, vendorController.updateVendorProfile);
 
-router.patch('/:id/status',
-  auth(['admin']),
-  [
-    body('status').isIn(['approved', 'rejected']),
-  ],
-  vendorController.updateVendorStatus
-);
+// // Admin can update vendor status
+// router.patch(
+//   '/:id/status',
+//   isAdmin,
+//   [
+//     body('status').isIn(['approved', 'rejected']).withMessage('Invalid status, choose between approved or rejected'),
+//   ],
+//   vendorController.updateVendorStatus
+// );
 
-module.exports = router;
+// module.exports = router;

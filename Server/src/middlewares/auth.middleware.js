@@ -1,25 +1,26 @@
 const jwt = require('jsonwebtoken');
 
-const auth = (roles = []) => {
+// Role validation middleware function
+const roleValidator = (requiredRole) => {
   return async (req, res, next) => {
-    console.log("auth middleware");
     try {
-      console.log("auth middleware");
-      
       const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
 
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Unauthorized: No token provided' });
+      }
+      console.log("1");
       const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-      
+      console.log("2");
+      const decoded = jwt.verify(token,"JWT_ACCESS_SECRET");
+      console.log(decoded);
       req.user = decoded;
 
-      if (roles.length && !roles.includes(req.user.role)) {
-        return res.status(403).json({ message: 'Forbidden' });
+      // Check if the user's role matches the required role
+      if (req.user.role !== requiredRole) {
+        return res.status(403).json({ message: `Forbidden: ${requiredRole} access required` });
       }
-
+      console.log("3");
       next();
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
@@ -30,4 +31,13 @@ const auth = (roles = []) => {
   };
 };
 
-module.exports = auth;
+// Export role-specific middlewares
+const isAdmin = roleValidator('admin');
+const isVendor = roleValidator('vendor');
+const isCustomer = roleValidator('customer');
+
+module.exports = {
+  isAdmin,
+  isVendor,
+  isCustomer,
+};

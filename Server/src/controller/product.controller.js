@@ -5,21 +5,16 @@ const getAllProducts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sort = req.query.sort || '-createdAt';
-    const category = req.query.category;
-    const brand = req.query.brand;
-    const minPrice = req.query.minPrice;
-    const maxPrice = req.query.maxPrice;
-    const vendor = req.query.vendor;
-    const search = req.query.search;
+    const { category, brand, vendor, minPrice, maxPrice, search } = req.query;
 
     const query = { status: 'published' };
-    if (category) query.category = category;
-    if (brand) query.brand = brand;
-    if (vendor) query.vendor = vendor;
+    if (category) query.category = mongoose.Types.ObjectId(category);
+    if (brand) query.brand = mongoose.Types.ObjectId(brand);
+    if (vendor) query.vendor = mongoose.Types.ObjectId(vendor);
     if (minPrice || maxPrice) {
       query.price = {};
-      if (minPrice) query.price.$gte = minPrice;
-      if (maxPrice) query.price.$lte = maxPrice;
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
     }
     if (search) {
       query.$or = [
@@ -45,9 +40,11 @@ const getAllProducts = async (req, res) => {
       totalProducts: total
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 const getProductById = async (req, res) => {
   try {
@@ -63,42 +60,60 @@ const getProductById = async (req, res) => {
 
     res.json(product);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching product:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
+
 const createProduct = async (req, res) => {
   try {
-    console.log(req.body);
+    console.log("req.user:", req.user); // Log user details
+    console.log("Parsed req.body:", req.body); // Log request body
+
+    if (!req.user || !req.user.userId) {
+      return res.status(400).json({ message: 'Vendor information is missing or invalid' });
+    }
+
     const product = new Product({
       ...req.body,
-      vendor: req.user.vendorId
+      vendor: req.user.userId, // Ensure this field is populated correctly
     });
+
+    console.log("Creating product:", product); // Log product details
     await product.save();
-    res.status(201).json(product);
+
+    res.status(201).json(product); // Successfully created
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error creating product:", error); // Log error details
+    res.status(500).json({ message: 'Server error', error: error.message }); // Return error response
   }
 };
 
 const updateProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({
-      _id: req.params.id,
-      vendor: req.user.vendorId
-    });
+    const { category, brand, ...updateFields } = req.body;
+
+    if (category) updateFields.category = mongoose.Types.ObjectId(category);
+    if (brand) updateFields.brand = mongoose.Types.ObjectId(brand);
+
+    const product = await Product.findOneAndUpdate(
+      { _id: req.params.id, vendor: req.user.vendorId },
+      updateFields,
+      { new: true }
+    );
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    Object.assign(product, req.body);
-    await product.save();
     res.json(product);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error updating product:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 const deleteProduct = async (req, res) => {
   try {
@@ -113,19 +128,25 @@ const deleteProduct = async (req, res) => {
 
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error deleting product:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 const addProductRating = async (req, res) => {
   try {
+    const { rating, review } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
     const existingRating = product.ratings.find(
-      r => r.user.toString() === req.user.userId
+      (r) => r.user.toString() === req.user.userId
     );
 
     if (existingRating) {
@@ -134,19 +155,22 @@ const addProductRating = async (req, res) => {
 
     product.ratings.push({
       user: req.user.userId,
-      rating: req.body.rating,
-      review: req.body.review
+      rating,
+      review,
     });
 
     const totalRatings = product.ratings.reduce((sum, item) => sum + item.rating, 0);
     product.averageRating = totalRatings / product.ratings.length;
 
     await product.save();
+
     res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error adding rating:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 module.exports = {
   getAllProducts,
