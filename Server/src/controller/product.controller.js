@@ -1,5 +1,4 @@
 const Product = require('../models/product.model.js');
-
 const getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -44,8 +43,6 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
@@ -64,8 +61,6 @@ const getProductById = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-
 const createProduct = async (req, res) => {
   try {
     console.log("req.user:", req.user); // Log user details
@@ -89,7 +84,6 @@ const createProduct = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message }); // Return error response
   }
 };
-
 const updateProduct = async (req, res) => {
   try {
     const { category, brand, ...updateFields } = req.body;
@@ -113,8 +107,6 @@ const updateProduct = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findOneAndDelete({
@@ -170,8 +162,6 @@ const addProductRating = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-
 module.exports = {
   getAllProducts,
   getProductById,
